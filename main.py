@@ -21,8 +21,13 @@ def main():
         contents=messages
         )
     print(response.text)
-    print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
-    print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
+    # TODO: Replace with argparse tools
+    if len(sys.argv) > 2:
+        if "--verbose" in sys.argv[2:]:
+            print(f"User prompt: {user_prompt}")
+            print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
+            print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
+
 
 
 if __name__ == "__main__":
