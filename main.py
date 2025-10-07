@@ -2,6 +2,7 @@ import os
 import sys
 from dotenv import load_dotenv
 from google import genai
+from google.genai import types
 
 def main():
     print("Hello from ai-agent!")
@@ -12,9 +13,12 @@ def main():
         print("Error: Please provide a prompt")
         sys.exit(1)
     user_prompt = sys.argv[1]
+    messages = [
+        types.Content(role="user", parts=[types.Part(text=user_prompt)]),
+    ]
     response = client.models.generate_content(
         model="gemini-2.0-flash-001",
-        contents=user_prompt
+        contents=messages
         )
     print(response.text)
     print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
