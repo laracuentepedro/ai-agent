@@ -19,12 +19,13 @@ def run_python_file(working_directory, file_path, args=[]):
             text=True,
             cwd=abs_working_dir
             )
-        
-        return_output = completed_process.stdout or "No output produced."
-        return_statement = f"STDOUT: {return_output}, STDERR: {completed_process.stderr}"
-        return_code = completed_process.returncode
-        if return_code != 0:
-            return_statement += f"Process exited with code {return_code}"
-        return return_statement
+        output = []
+        if completed_process.stdout:
+            output.append(f"STDOUT:\n{completed_process.stdout}")
+        if completed_process.stderr:
+            output.append(f"STDERR:\n{completed_process.stderr}")
+        if completed_process.returncode != 0:
+            output.append(f"Process exited with code {completed_process.returncode}")
+        return "\n".join(output) if output else "No output produced."
     except Exception as e:
         return f"Error: executing Python file: {e}"
