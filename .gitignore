@@ -11,3 +11,6 @@ wheels/
 
 # Private Info
 .env
+
+#Misc files
+*lorem*
