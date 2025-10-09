@@ -1,5 +1,6 @@
 import os
 import subprocess
+from google.genai import types
 def run_python_file(working_directory, file_path, args=[]):
     abs_working_dir = os.path.abspath(working_directory)
     target_file = os.path.abspath(os.path.join(working_directory, file_path))
@@ -29,3 +30,26 @@ def run_python_file(working_directory, file_path, args=[]):
         return "\n".join(output) if output else "No output produced."
     except Exception as e:
         return f"Error: executing Python file: {e}"
+    
+# Schema for instructing the Agent how to use this function tool
+schema_get_files_info = types.FunctionDeclaration(
+    name="run_python_file",
+    description="Executes the specified script.",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "working_directory": types.Schema(
+                type=types.Type.STRING,
+                description="The directory to list files from, relative to the working directory. If not provided, lists files in the working directory itself.",
+            ),
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="The file path to retrieve the file from, relative to the working directory. Must be specified. Must be within the boundaries of the working directory.",
+            ),
+            "args": types.Schema(
+                type=types.Type.ARRAY,
+                description="The arguments to pass to the Python script.",
+            ),
+        },
+    ),
+)
