@@ -5,22 +5,35 @@ from google import genai
 from google.genai import types
 from config import system_prompt
 from functions.get_files_info import schema_get_files_info
-
+from functions.call_function import call_function, available_functions
 def main():
-    print("Hello from ai-agent!")
     load_dotenv()
-    api_key = os.environ.get("GEMINI_API_KEY")
-    available_functions = types.Tool(
-        function_declarations=[schema_get_files_info]
-    )
-    client = genai.Client(api_key=api_key)
-    if len(sys.argv) < 2:
-        print("Error: Please provide a prompt")
+    verbose = "--verbose" in sys.argv
+    # TODO: Replace with argparse tools
+    args = []
+    for arg in sys.argv[1:]:
+        if not arg.startswith("--"):
+            args.append(arg)
+
+    if not args:
+        print("AI Code Assistant")
+        print('\nUsage: python main.py "your prompt here" [--verbose]')
+        print('Example: python main.py "How do I fix the calculator?"')
         sys.exit(1)
-    user_prompt = sys.argv[1]
+
+    api_key = os.environ.get("GEMINI_API_KEY")
+    client = genai.Client(api_key=api_key)
+
+
+    user_prompt = " ".join(args)
+
+    if verbose:
+        print(f"User prompt: {user_prompt}")
+
     messages = [
         types.Content(role="user", parts=[types.Part(text=user_prompt)]),
     ]
+
     response = client.models.generate_content(
         model="gemini-2.0-flash-001",
         contents=messages,
@@ -30,17 +43,28 @@ def main():
             ),
         
         )
-    if response.function_calls:
-        for call in response.function_calls:
-            print(f"Calling function: {call.name}({call.args})")
-    else:
+    if verbose:
+        print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
+        print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
+
+    if not response.function_calls:
         print(response.text)
-    # TODO: Replace with argparse tools
-    if len(sys.argv) > 2:
-        if "--verbose" in sys.argv[2:]:
-            print(f"User prompt: {user_prompt}")
-            print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
-            print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
+
+    function_responses = []
+    for function_call_part in response.function_calls:
+        function_call_result = call_function(function_call_part, verbose)
+        if (
+            not function_call_result.parts[0].function_response.response
+            or not function_call_result.parts
+            ):
+            raise Exception("Error: No function call")
+        if verbose:
+            print(f"-> {function_call_result.parts[0].function_response.response}")
+
+        print(f"Calling function: {function_call_part.name}({function_call_part.args})")
+
+
+            
 
 
 
