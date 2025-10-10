@@ -17,8 +17,8 @@ def get_file_content(working_directory, file_path):
         return "Error: Error reading file"
     
 # Schema for instructing the Agent how to use this function tool
-schema_get_files_info = types.FunctionDeclaration(
-    name="get_files_content",
+schema_get_file_content = types.FunctionDeclaration(
+    name="get_file_content",
     description="Retrieves the content for the specified file in the working directory, constrained to the working directory.",
     parameters=types.Schema(
         type=types.Type.OBJECT,

@@ -32,7 +32,7 @@ def run_python_file(working_directory, file_path, args=[]):
         return f"Error: executing Python file: {e}"
     
 # Schema for instructing the Agent how to use this function tool
-schema_get_files_info = types.FunctionDeclaration(
+schema_run_python_file = types.FunctionDeclaration(
     name="run_python_file",
     description="Executes the specified script.",
     parameters=types.Schema(
@@ -49,6 +49,10 @@ schema_get_files_info = types.FunctionDeclaration(
             "args": types.Schema(
                 type=types.Type.ARRAY,
                 description="The arguments to pass to the Python script.",
+                items=types.Schema(
+                    type=types.Type.STRING,
+                    description="argument to pass into the execution script"
+                )
             ),
         },
     ),

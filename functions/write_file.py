@@ -16,7 +16,7 @@ def write_file(working_directory, file_path, content):
         return f"Error: {e}"
 
 # Schema for instructing the Agent how to use this function tool
-schema_get_files_info = types.FunctionDeclaration(
+schema_write_file = types.FunctionDeclaration(
     name="write_file",
     description="Writes to the specified file in the working directory.",
     parameters=types.Schema(
