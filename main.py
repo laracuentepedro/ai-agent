@@ -9,7 +9,6 @@ from functions.call_function import call_function, available_functions
 def main():
     load_dotenv()
     verbose = "--verbose" in sys.argv
-    # TODO: Replace with argparse tools
     args = []
     for arg in sys.argv[1:]:
         if not arg.startswith("--"):
@@ -60,6 +59,9 @@ def main():
             raise Exception("Error: No function call")
         if verbose:
             print(f"-> {function_call_result.parts[0].function_response.response}")
+            function_responses.append(function_call_result.parts[0])
+        if not function_responses:
+            raise Exception("no function responses generated, exiting.")
 
         print(f"Calling function: {function_call_part.name}({function_call_part.args})")
 
